@@ -1,0 +1,22 @@
+$ sudo apt install gcc
+sudo snap install code --classic
+
+gcc ./simple-server.c -o server
+gcc ./simple-client.c -o client
+./server
+./client
+
+Report Title Page
+Table of Content
+Introduction
+->about NP and socket Programming
+Objective
+->two questions
+implementation
+-> explain each line of code
+result
+->output what happened
+conclusion
+-> what you learnt
+Appendices
+->Whole screenshot with terminal and log

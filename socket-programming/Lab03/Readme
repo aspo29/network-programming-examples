@@ -1,0 +1,105 @@
+1. TCP Server using fork() (if applicable):
+Server:
+
+
+gcc fork_server.c -o fork_server
+./fork_server
+Client:
+
+
+gcc fork_client.c -o fork_client
+./fork_client
+This implementation uses fork() to handle each new client in a separate process.
+
+Useful for basic concurrent models; incurs overhead for each process created.
+
+2. TCP Server using select()
+Server:
+
+
+gcc select_server.c -o select_server
+./select_server
+Client:
+
+
+gcc client.c -o client
+./client
+The server handles multiple clients using select() for I/O multiplexing.
+
+Single-threaded and efficient for handling many connections without forking.
+
+3. Multithreaded TCP Server
+Server:
+
+
+gcc multithreaded_server.c -o multithreaded_server -lpthread
+./multithreaded_server
+Client:
+
+
+# Change PORT to 8081 in client.c
+gcc client.c -o client
+./client
+Creates a new thread (pthread) for each client.
+
+Enables true parallelism, but requires careful memory and thread management.
+
+4. Blocking I/O
+
+gcc blocking_io.c -o blocking_io
+./blocking_io
+Waits (blocks) for user input before proceeding.
+
+Simple but not suitable for high-performance servers.
+
+5. Non-blocking I/O
+
+gcc nonblocking_io.c -o nonblocking_io
+./nonblocking_io
+Allows the program to continue even when no input is available.
+
+Ideal for event-driven or real-time applications.
+
+6. Multiplexing I/O
+
+gcc multiplexing_io.c -o multiplexing_io
+./multiplexing_io
+Client:
+
+
+# Change PORT to 8082 in client.c
+gcc client.c -o client
+./client
+Combines keyboard input and client socket handling using select().
+
+Efficient for managing multiple input streams in one process.
+
+7. Signal-Driven I/O
+
+gcc signal_driven_io.c -o signal_driven_io
+./signal_driven_io
+Uses system signals like SIGIO to handle input events.
+
+A more asynchronous way of handling input readiness.
+
+8. Signal Handling in Network Program
+
+gcc signal_handler.c -o signal_handler
+./signal_handler
+Handles interrupt signals like SIGINT (Ctrl+C) gracefully.
+
+Ensures resources are released and the program exits cleanly.
+
+9. Daemonizing a Process
+
+gcc daemon_process.c -o daemon_process
+./daemon_process &
+Runs in the background as a system daemon.
+
+Logs activity every 10 seconds to /tmp/daemon_log.txt.
+
+To view logs:
+
+
+tail -f /tmp/daemon_log.txt
+✅ This completes the configuration, compilation, and execution documentation for all Lab 03 implementations.
