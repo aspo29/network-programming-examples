@@ -1,0 +1,75 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Simple Relay Chat</title>
+  <style>
+    body{font-family: Arial, Helvetica, sans-serif; padding:10px; }
+    #log{height:60vh; border:1px solid #ccc; padding:6px; overflow:auto; white-space:pre-wrap;}
+    #peers{font-size:0.9em; color:#555; margin-bottom:6px;}
+    input,button{padding:8px; margin:4px;}
+  </style>
+</head>
+<body>
+  <h3>Relay Chat (Android)</h3>
+  <div id="peers">Not connected</div>
+  <div id="log"></div>
+
+  <input id="name" placeholder="your name" />
+  <button id="btnRegister">Set Name</button>
+  <br/>
+
+  <input id="to" placeholder="to (id or 'broadcast')" />
+  <input id="text" placeholder="message" size="40" />
+  <button id="send">Send</button>
+
+<script>
+  const macIP = location.hostname; // works when opened from http://<MAC_IP>...
+  const wsUrl = `ws://${macIP}:8765/ws`;
+  const log = el=> { const d=document.getElementById('log'); d.innerText = d.innerText + "\\n" + el; d.scrollTop=d.scrollHeight; };
+
+  let ws = new WebSocket(wsUrl);
+  let myId = null;
+
+  ws.onopen = ()=> log('[connected to relay]');
+  ws.onmessage = (ev)=> {
+    try {
+      const data = JSON.parse(ev.data);
+      if (data.type === 'welcome') {
+        myId = data.id;
+        log(`[welcome] id=${data.id} name=${data.name}`);
+        document.getElementById('peers').innerText = `You: ${data.id} (${data.name})`;
+      } else if (data.type === 'registered') {
+        log(`[registered] ${data.name} (id=${data.id})`);
+      } else if (data.type === 'message') {
+        log(`[from ${data.from} ${data.from_name}] -> ${data.text}`);
+      } else if (data.type === 'list') {
+        log(`[clients] ${JSON.stringify(data.clients)}`);
+      } else if (data.type === 'error') {
+        log(`[error] ${data.message}`);
+      } else {
+        log(`[info] ${JSON.stringify(data)}`);
+      }
+    } catch(e) {
+      log('[raw] ' + ev.data);
+    }
+  };
+
+  ws.onclose = ()=> log('[disconnected]');
+
+  document.getElementById('btnRegister').onclick = ()=> {
+    const name = document.getElementById('name').value || '';
+    ws.send(JSON.stringify({type:'register', name}));
+  };
+
+  document.getElementById('send').onclick = ()=> {
+    const to = document.getElementById('to').value || 'broadcast';
+    const text = document.getElementById('text').value || '';
+    ws.send(JSON.stringify({type:'message', to, text}));
+    log(`[you -> ${to}] ${text}`);
+    document.getElementById('text').value='';
+  };
+</script>
+</body>
+</html>
+
